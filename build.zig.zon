@@ -1,0 +1,8 @@
+.{
+    .name = .zig_oura,
+    .version = "0.1.0",
+    .fingerprint = 0xffed3babdb75a86d,
+    .minimum_zig_version = "0.17.0-dev.1441+d5181a9c9",
+    .dependencies = .{},
+    .paths = .{ "src", "include", "test", "build.zig", "build.zig.zon", "README.md", "LICENSE", "NOTICE.md" },
+}

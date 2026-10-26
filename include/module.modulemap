@@ -1,0 +1,4 @@
+module ZigOura {
+    header "oura.h"
+    export *
+}

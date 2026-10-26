@@ -1,0 +1,45 @@
+{
+  "name": "@zig-utils/oura",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Native, allocation-free Oura BLE authentication, history sync and event decoding",
+  "author": "Chris Breuer <chris@stacksjs.org>",
+  "license": "MIT",
+  "repository": "https://github.com/zig-utils/zig-oura",
+  "exports": {
+    ".": {
+      "types": "./bindings/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bindings",
+    "src",
+    "include",
+    "build.zig",
+    "build.zig.zon",
+    "README.md",
+    "NOTICE.md",
+    "LICENSE",
+    "test/abi.c"
+  ],
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "build:native": "zig build -Doptimize=ReleaseFast",
+    "test": "zig build test && bun test ./test",
+    "lint": "zig fmt --check build.zig build.zig.zon src",
+    "release": "pantry release patch --yes",
+    "release:patch": "pantry release patch --yes",
+    "release:minor": "pantry release minor --yes",
+    "release:major": "pantry release major --yes",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build && bun run typecheck && bun test ./test",
+    "release:preview": "pantry release patch --dry-run",
+    "test:swift": "bun scripts/test-swift.ts",
+    "bench": "zig build bench -Doptimize=ReleaseFast"
+  },
+  "devDependencies": {
+    "better-dx": "0.2.38"
+  }
+}

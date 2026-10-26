@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    name: Native and portable tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0-dev.1441+d5181a9c9
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bun run typecheck
+      - run: bun test ./test
+      - if: runner.os == 'macOS'
+        run: bun run test:swift
+      - name: Generated portable code is current
+        run: git diff --exit-code -- bindings/wasm-bytes.ts dist
+  lint:
+    name: Zig format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0-dev.1441+d5181a9c9
+      - run: zig fmt --check build.zig build.zig.zon src
