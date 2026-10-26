@@ -115,10 +115,10 @@ The portable npm-format package is `@zig-utils/oura`. GitHub releases include
 its package tarball; the native source is published through Pantry.
 
 ```ts
-import { OuraBleClient, createOuraProtocol } from '@zig-utils/oura'
+import { connectOuraBluetooth } from '@zig-utils/oura'
 
-const protocol = await createOuraProtocol()
-const client = new OuraBleClient(transport, protocol)
+// An explicitly selected device, with an ordered native GATT stream.
+const client = await connectOuraBluetooth(bluetooth, selectedDeviceId)
 try {
   await client.open(existingPairingKey)
   await client.sync({
@@ -130,11 +130,17 @@ try {
 finally { await client.close() }
 ```
 
+For other transports, construct `new OuraBleClient(transport, protocol)`.
 The host supplies `write(bytes)`, `read(timeoutMs)`, and `close()`. Queue
 notifications before any write, preserve their order, reject overflow and
 disconnect, and cancel outstanding operations on close. The client also bounds
 I/O itself and preserves the original failure if teardown fails. Radio reconnect
 policy belongs to the application and resumes from its last durable checkpoint.
+
+`connectOuraBluetooth` adapts a native GATT bridge, validates every incoming
+byte, erases temporary write copies, and closes failed or cancelled connections.
+It never scans, authenticates, or installs a key implicitly. `current` can bind
+its operations to the signed-in account.
 
 `createOuraProtocol` uses WASM. A host without WebAssembly must inject an
 `OuraProtocol` backed by the native C ABI; this package has no separate JS
